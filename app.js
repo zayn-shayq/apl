@@ -1,15 +1,15 @@
 const express = require('express');
 const { spawn } = require('child_process');
-
-const pythonProcess = spawn('python3', ['predict.py']);
-
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
 app.get('/predict', (req, res) => {
-    // Example input - replace with actual input or use `req.body` for real requests
+    // Adjust the Python command as necessary ('python3' or 'python')
+    const pythonProcess = spawn('python3', ['predict.py']);
+
+    // Example input - in a real scenario, you'd replace this with actual input, e.g., from req.body
     const input = {
         "feature1": 0,
         "feature2": 0,
@@ -19,9 +19,8 @@ app.get('/predict', (req, res) => {
         "feature6": 0
     };
 
-    const pythonProcess = spawn('python', ['predict.py']);
-    let stdoutData = "";
-    let stderrData = "";
+    let stdoutData = '';
+    let stderrData = '';
 
     // Sending JSON data to the Python script via stdin
     pythonProcess.stdin.write(JSON.stringify(input));
@@ -37,9 +36,14 @@ app.get('/predict', (req, res) => {
         stderrData += data.toString();
     });
 
+    // Error handling for the spawn process
+    pythonProcess.on('error', (err) => {
+        console.error('Failed to start subprocess:', err);
+    });
+
     // Handling script execution closure
     pythonProcess.on('close', (code) => {
-        console.log(`child process exited with code ${code}`);
+        console.log(`Child process exited with code ${code}`);
         if (code !== 0) {
             console.error(`stderr: ${stderrData}`);
             return res.status(500).send({error: 'Failed to get prediction', code, stdoutData, stderrData});
