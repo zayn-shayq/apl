@@ -1,5 +1,5 @@
 const express = require('express');
-const { spawn } = require('child_process');
+const pythonProcess = spawn('python3', ['predict.py']);
 
 const app = express();
 const port = process.env.PORT || 3000;
