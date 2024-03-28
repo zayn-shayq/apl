@@ -1,22 +1,22 @@
 const express = require('express');
 const { spawn } = require('child_process');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 5001
 
 app.use(express.json());
 
 app.get('/predict', (req, res) => {
-    // Adjust the Python command as necessary ('python3' or 'python')
-    const pythonProcess = spawn('python3', ['predict.py']);
+    // Adjust the Python command as necessary ('python' or 'python3')
+    const pythonProcess = spawn('python', ['predict.py']);
 
-    // Example input - in a real scenario, you'd replace this with actual input, e.g., from req.body
+    // Construct the input object with the correct keys as expected by the Python script
     const input = {
-        "feature1": 0,
-        "feature2": 0,
-        "feature3": 0,
-        "feature4": 0,
-        "feature5": 0,
-        "feature6": 0
+        "feature1": Number(req.query.f1),
+        "feature2": Number(req.query.f2),
+        "feature3": Number(req.query.f3),
+        "feature4": Number(req.query.f4),
+        "feature5": Number(req.query.f5),
+        "feature6": Number(req.query.f6)
     };
 
     let stdoutData = '';
@@ -53,5 +53,5 @@ app.get('/predict', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+    console.log(`Server listening on port ${port}`);    
 });
